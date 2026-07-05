@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Миграция аккаунтов → @mexcinsertbot</title>
+<meta name="description" content="Инструкция по переносу рабочих аккаунтов в Telegram-бота @mexcinsertbot: выдача API с полным доступом и добавление по схеме.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0C1826;         /* глубокий сине-графитовый текст */
+    --ink-soft:#42566b;    /* вторичный текст */
+    --line:#dfe6ee;        /* линии/границы */
+    --bg:#f4f7fa;          /* фон страницы, холодный светлый */
+    --card:#ffffff;
+    --accent:#0891b2;      /* циан — основной акцент (действие) */
+    --accent-ink:#075e73;
+    --accent-wash:#e6f6fa;
+    --go:#15935a;          /* семантический «готов/успех» */
+    --go-wash:#e7f5ee;
+    --warn:#b45309;        /* семантический «внимание/без API» */
+    --warn-wash:#fdf1e3;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(12,24,38,.04), 0 8px 30px rgba(12,24,38,.06);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    line-height:1.62; font-size:17px;
+    background-image:radial-gradient(60% 40% at 50% -8%, #e9f4f8 0%, rgba(233,244,248,0) 70%);
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:0 20px 96px}
+  code, .mono{font-family:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.86em}
+
+  /* ── шапка ── */
+  header{padding:64px 0 20px}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--accent-ink); background:var(--accent-wash);
+    padding:7px 13px; border-radius:999px;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  h1{
+    font-size:clamp(30px, 6vw, 46px); line-height:1.08; font-weight:800;
+    letter-spacing:-.02em; margin:20px 0 14px; text-wrap:balance;
+  }
+  h1 .hl{color:var(--accent-ink)}
+  .lead{font-size:19px; color:var(--ink-soft); margin:0; max-width:60ch}
+  .lead b{color:var(--ink)}
+
+  /* ── TL;DR ── */
+  .tldr{
+    margin-top:34px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 24px;
+    border-left:4px solid var(--accent);
+  }
+  .tldr h2{margin:0 0 10px; font-size:15px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft)}
+  .tldr ol{margin:0; padding-left:22px}
+  .tldr li{margin:6px 0}
+  .tldr li b{color:var(--ink)}
+  .bot{
+    display:inline-block; font-weight:700; color:var(--accent-ink);
+    background:var(--accent-wash); padding:1px 8px; border-radius:7px; text-decoration:none;
+    white-space:nowrap;
+  }
+  .bot:hover{background:#d6eff5}
+
+  /* ── секции-шаги ── */
+  section{margin-top:52px}
+  .step-head{display:flex; align-items:center; gap:14px; margin-bottom:16px}
+  .num{
+    flex:none; width:38px; height:38px; border-radius:11px;
+    display:grid; place-items:center; font-weight:800; font-size:18px;
+    color:#fff; background:linear-gradient(160deg, #12a3c2, #0891b2);
+    box-shadow:0 4px 12px rgba(8,145,178,.32);
+  }
+  .step-head h2{margin:0; font-size:23px; font-weight:800; letter-spacing:-.01em}
+  .step-sub{color:var(--ink-soft); margin:-6px 0 0}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 24px}
+  .card + .card{margin-top:14px}
+  .card p:first-child{margin-top:0}
+  .card p:last-child{margin-bottom:0}
+
+  ul.clean{margin:12px 0; padding-left:20px}
+  ul.clean li{margin:7px 0}
+
+  /* ── видео ── */
+  .video-frame{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:12px; overflow:hidden;
+  }
+  video{width:100%; display:block; border-radius:9px; background:#0b1420}
+  .video-cap{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 8px 4px; flex-wrap:wrap}
+  .video-cap span{color:var(--ink-soft); font-size:15px}
+  .dl{font-weight:700; color:var(--accent-ink); text-decoration:none; font-size:15px}
+  .dl:hover{text-decoration:underline}
+
+  .callout{
+    display:flex; gap:12px; margin-top:14px; padding:14px 16px; border-radius:12px;
+    background:var(--go-wash); color:#0f5a39; font-size:15.5px; line-height:1.5;
+  }
+  .callout.warn{background:var(--warn-wash); color:#7c3d06}
+  .callout .ic{flex:none; font-size:18px; line-height:1.4}
+  .callout b{color:inherit}
+
+  /* ── схема ── */
+  .diagram-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:var(--radius)}
+  .diagram-wrap svg{display:block; min-width:820px; width:100%; height:auto}
+  .scroll-hint{color:var(--ink-soft); font-size:13.5px; margin:8px 2px 0; display:none}
+
+  /* ── карточки данных ── */
+  .data-grid{display:grid; grid-template-columns:1fr; gap:10px; margin:14px 0 2px}
+  .data-row{display:flex; align-items:flex-start; gap:12px; padding:13px 15px; border:1px solid var(--line); border-radius:12px; background:#fbfdfe}
+  .data-row .k{flex:none; width:120px; font-weight:700; color:var(--accent-ink)}
+  .data-row .v{color:var(--ink-soft)}
+  .data-row .v code{color:var(--ink)}
+
+  .final{
+    margin-top:52px; text-align:center; padding:34px 24px;
+    background:linear-gradient(165deg, #0c1826, #123049); color:#eaf6fb;
+    border-radius:var(--radius); box-shadow:var(--shadow);
+  }
+  .final h2{margin:0 0 8px; font-size:24px; font-weight:800; color:#fff}
+  .final p{margin:0 auto; color:#b8d4e0; max-width:48ch}
+  .final .bot{background:rgba(255,255,255,.12); color:#8fe3f4}
+
+  footer{margin-top:40px; text-align:center; color:var(--ink-soft); font-size:14px}
+
+  @media (max-width:560px){
+    body{font-size:16px}
+    .data-row{flex-direction:column; gap:4px}
+    .data-row .k{width:auto}
+    .scroll-hint{display:block}
+    .card,.tldr{padding:18px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow"><span class="dot"></span>Миграция · FLIP</span>
+    <h1>Переносим все рабочие аккаунты в&nbsp;<span class="hl">@mexcinsertbot</span></h1>
+    <p class="lead">Привет 👋 Дальше вся работа идёт через одного Telegram-бота — это удобнее и быстрее.
+      Твоя задача: <b>завести в бота все свои рабочие аккаунты</b>. Ниже — как получить от ребят
+      API-доступ и как добавить аккаунт по шагам.</p>
+
+    <div class="tldr">
+      <h2>Коротко</h2>
+      <ol>
+        <li>Ребята включают галочки безопасности и дают тебе <b>API Key + Secret с полным доступом</b> (видео ниже).</li>
+        <li>Ты добавляешь каждый аккаунт в <a class="bot" href="https://t.me/mexcinsertbot" target="_blank" rel="noopener">@mexcinsertbot</a> по схеме.</li>
+        <li>Бот отдаёт адрес для вайтлиста → клиент вносит его → <b>аккаунт готов</b>.</li>
+      </ol>
+    </div>
+  </header>
+
+  <!-- ШАГ 1 -->
+  <section>
+    <div class="step-head">
+      <div class="num">1</div>
+      <div>
+        <h2>Получить API с полным доступом</h2>
+        <p class="step-sub">Что твои ребята делают на своём аккаунте MEXC</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <p>Автовывод профита работает <b>только по API-ключу</b>. Поэтому по каждому аккаунту нужно
+        получить <b>API Key</b> и <b>Secret Key</b> с включёнными правами. На видео показано, какие
+        галочки безопасности включить и как выпустить ключ с полным доступом:</p>
+
+      <div class="video-frame" style="margin-top:16px">
+        <video controls preload="metadata" playsinline>
+          <source src="api-access.mp4" type="video/mp4">
+          Твой браузер не умеет проигрывать видео.
+        </video>
+        <div class="video-cap">
+          <span>Настройки безопасности и выпуск API-ключа</span>
+          <a class="dl" href="api-access.mp4" download>Скачать видео ↓</a>
+        </div>
+      </div>
+
+      <div class="callout">
+        <span class="ic">🔑</span>
+        <div>Нужны <b>оба ключа</b> — Access Key <i>и</i> Secret Key — с правами на чтение, торговлю
+          и <b>вывод</b>. Secret показывается один раз при создании: пусть сразу скопируют и пришлют тебе.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ШАГ 2 -->
+  <section>
+    <div class="step-head">
+      <div class="num">2</div>
+      <div>
+        <h2>Добавить аккаунт по схеме</h2>
+        <p class="step-sub">Кто что делает — клиент и ты (посредник)</p>
+      </div>
+    </div>
+
+    <div class="card" style="padding:18px">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 1120 380" role="img" aria-label="Схема добавления аккаунта: клиент и посредник">
+          <defs>
+            <marker id="arw" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#7c93a6"/>
+            </marker>
+            <linearGradient id="boxg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f3f8fb"/>
+            </linearGradient>
+          </defs>
+
+          <!-- дорожки -->
+          <rect x="0" y="20" width="1120" height="170" fill="#f8fbfd" stroke="#e4ebf1"/>
+          <rect x="0" y="190" width="1120" height="170" fill="#fcfdfe" stroke="#e4ebf1"/>
+          <g font-family="Manrope, sans-serif" font-weight="800" font-size="13" fill="#6b8092" letter-spacing=".08em">
+            <text x="16" y="112" transform="rotate(-90 16 112)" text-anchor="middle">КЛИЕНТ</text>
+            <text x="16" y="282" transform="rotate(-90 16 282)" text-anchor="middle">ПОСРЕДНИК</text>
+          </g>
+          <line x1="40" y1="20" x2="40" y2="360" stroke="#e4ebf1"/>
+
+          <!-- связи (рисуем под узлами) -->
+          <g fill="none" stroke="#7c93a6" stroke-width="2">
+            <!-- старт → потребовать API -->
+            <path d="M108,150 L108,232" marker-end="url(#arw)"/>
+            <!-- потребовать API → выполнить инструкцию -->
+            <path d="M225,270 L300,270 L300,105 L332,105" marker-end="url(#arw)"/>
+            <!-- выполнить → отправить данные -->
+            <path d="M452,105 L492,105" marker-end="url(#arw)"/>
+            <!-- отправить данные → загрузить в бота -->
+            <path d="M560,133 L560,232" marker-end="url(#arw)"/>
+            <!-- загрузить → получить адрес -->
+            <path d="M628,270 L668,270" marker-end="url(#arw)"/>
+            <!-- получить → отправить клиенту -->
+            <path d="M788,270 L828,270" marker-end="url(#arw)"/>
+            <!-- отправить клиенту → добавить вайтлист -->
+            <path d="M896,242 L896,133" marker-end="url(#arw)"/>
+            <!-- добавить вайтлист → готов -->
+            <path d="M964,105 L1004,105" marker-end="url(#arw)"/>
+          </g>
+
+          <!-- аннотации (пунктирные выноски) -->
+          <g stroke="#c3d0da" stroke-dasharray="3 3" stroke-width="1.4">
+            <path d="M392,78 L392,52" fill="none"/>
+            <path d="M526,78 L526,52" fill="none"/>
+            <path d="M560,243 L560,232 M560,232 L640,232" fill="none"/>
+          </g>
+          <g font-family="'JetBrains Mono', monospace" font-size="10.5" fill="#5b7286">
+            <text x="392" y="44" text-anchor="middle">neveren0ugh.github.io/FAQ-flip/</text>
+            <text x="526" y="44" text-anchor="middle">WEBID · API KEY + SECRET</text>
+            <text x="648" y="236">@mexcinsertbot</text>
+          </g>
+
+          <!-- узлы: клиент -->
+          <!-- старт -->
+          <circle cx="108" cy="118" r="24" fill="#fff" stroke="#15935a" stroke-width="2.5"/>
+          <text x="108" y="82" text-anchor="middle" font-family="Manrope" font-size="12" font-weight="700" fill="#0f5a39">Есть аккаунт</text>
+
+          <g font-family="Manrope, sans-serif" font-weight="700" font-size="13" fill="#0c1826" text-anchor="middle">
+            <!-- выполнить инструкцию -->
+            <rect x="332" y="78" width="120" height="54" rx="11" fill="url(#boxg)" stroke="#cfe0e8"/>
+            <text x="392" y="101">Выполнить</text><text x="392" y="118">инструкцию</text>
+            <!-- отправить данные -->
+            <rect x="492" y="78" width="120" height="54" rx="11" fill="url(#boxg)" stroke="#cfe0e8"/>
+            <text x="552" y="101">Отправить</text><text x="552" y="118">данные</text>
+            <!-- добавить вайтлист -->
+            <rect x="836" y="78" width="128" height="54" rx="11" fill="url(#boxg)" stroke="#cfe0e8"/>
+            <text x="900" y="101">Внести адрес</text><text x="900" y="118">в вайтлист</text>
+          </g>
+          <!-- готов -->
+          <circle cx="1028" cy="105" r="24" fill="#e7f5ee" stroke="#15935a" stroke-width="3"/>
+          <text x="1028" y="152" text-anchor="middle" font-family="Manrope" font-size="12" font-weight="800" fill="#0f5a39">Аккаунт готов ✓</text>
+
+          <!-- узлы: посредник -->
+          <g font-family="Manrope, sans-serif" font-weight="700" font-size="13" fill="#0c1826" text-anchor="middle">
+            <rect x="105" y="243" width="120" height="54" rx="11" fill="url(#boxg)" stroke="#cfe0e8"/>
+            <text x="165" y="266">Запросить</text><text x="165" y="283">API-доступ</text>
+
+            <rect x="500" y="243" width="128" height="54" rx="11" fill="#eafaf0" stroke="#a9dcc0"/>
+            <text x="564" y="266">Загрузить в</text><text x="564" y="283">@mexcinsertbot</text>
+
+            <rect x="668" y="243" width="120" height="54" rx="11" fill="url(#boxg)" stroke="#cfe0e8"/>
+            <text x="728" y="266">Получить</text><text x="728" y="283">адрес вывода</text>
+
+            <rect x="828" y="243" width="120" height="54" rx="11" fill="url(#boxg)" stroke="#cfe0e8"/>
+            <text x="888" y="266">Отправить</text><text x="888" y="283">клиенту</text>
+          </g>
+        </svg>
+      </div>
+      <p class="scroll-hint">← схему можно листать вбок →</p>
+    </div>
+
+    <div class="card">
+      <p>По схеме от клиента тебе нужно получить и загрузить в бота:</p>
+      <div class="data-grid">
+        <div class="data-row">
+          <div class="k">Веб-токен</div>
+          <div class="v">строка вида <code>WEB…</code> (WEBID) — по ней бот находит UID аккаунта</div>
+        </div>
+        <div class="data-row">
+          <div class="k">Access Key</div>
+          <div class="v">API-ключ MEXC (из видео, Шаг 1)</div>
+        </div>
+        <div class="data-row">
+          <div class="k">Secret Key</div>
+          <div class="v">секрет API-ключа MEXC</div>
+        </div>
+      </div>
+      <p style="margin-bottom:0">Бот сам создаёт кошелёк и выдаёт <b>адрес для вывода</b>. Ты отправляешь этот адрес
+        клиенту — он вносит его в <b>вайтлист вывода</b> на MEXC (сеть BSC / BEP-20). После этого в боте
+        жмёшь «🔎 Проверить» — если адрес в вайтлисте, аккаунт готов.</p>
+    </div>
+  </section>
+
+  <!-- ШАГ 3 -->
+  <section>
+    <div class="step-head">
+      <div class="num">3</div>
+      <div>
+        <h2>Если API дать не готовы</h2>
+        <p class="step-sub">Запасной вариант — только веб-токен</p>
+      </div>
+    </div>
+    <div class="card">
+      <p>Бывает, клиент упирается и не хочет выдавать API. Тогда в боте при добавлении выбери
+        <b>«🚫 Без API»</b> и занеси хотя бы <b>веб-токен</b> — аккаунт всё равно попадёт в базу.</p>
+      <div class="callout warn">
+        <span class="ic">⚠️</span>
+        <div>Но это <b>не наш вариант</b>: без API <b>не работает автовывод</b> — профит придётся выводить
+          руками и «вьёбывать» деньги вручную. API избавляет от этой боли, поэтому по возможности
+          <b>всегда добивайся полного доступа</b>.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="final">
+    <h2>Дальше — всё через бота</h2>
+    <p>Как только аккаунты в <a class="bot" href="https://t.me/mexcinsertbot" target="_blank" rel="noopener">@mexcinsertbot</a>,
+      профиль, список аккаунтов, обновление токенов и автовывод — в одном месте. Удобно и без лишней возни.</p>
+  </div>
+
+  <footer>Вопросы — в личку. Погнали 🚀</footer>
+
+</div>
+</body>
+</html>
