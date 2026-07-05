@@ -53,9 +53,21 @@
   .lead{font-size:19px; color:var(--ink-soft); margin:0; max-width:60ch}
   .lead b{color:var(--ink)}
 
+  /* ── уведомление ── */
+  .notice{
+    display:flex; gap:13px; margin-top:28px; padding:16px 18px;
+    background:var(--warn-wash); border:1px solid #f0d5ac; border-radius:var(--radius);
+    color:#7c3d06; font-size:16px; line-height:1.55;
+  }
+  .notice .ic{
+    flex:none; width:22px; height:22px; border-radius:50%; background:var(--warn); color:#fff;
+    display:grid; place-items:center; font-weight:800; font-size:13px; font-style:italic; margin-top:1px;
+  }
+  .notice b{color:#5c2d04}
+
   /* ── TL;DR ── */
   .tldr{
-    margin-top:34px; background:var(--card); border:1px solid var(--line);
+    margin-top:22px; background:var(--card); border:1px solid var(--line);
     border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 24px;
     border-left:4px solid var(--accent);
   }
@@ -145,18 +157,22 @@
 <div class="wrap">
 
   <header>
-    <span class="eyebrow"><span class="dot"></span>Миграция · FLIP</span>
-    <h1>Переносим все рабочие аккаунты в&nbsp;<span class="hl">@mexcinsertbot</span></h1>
-    <p class="lead">Привет 👋 Дальше вся работа идёт через одного Telegram-бота — это удобнее и быстрее.
-      Твоя задача: <b>завести в бота все свои рабочие аккаунты</b>. Ниже — как получить от ребят
-      API-доступ и как добавить аккаунт по шагам.</p>
+    <span class="eyebrow"><span class="dot"></span>Подготовка к новой схеме</span>
+    <h1>Перенос рабочих аккаунтов в&nbsp;<span class="hl">@mexcinsertbot</span></h1>
+
+    <div class="notice">
+      <span class="ic">i</span>
+      <div><b>Сейчас продолжаем работать по старой схеме.</b> Эта страница — только подготовка
+        к переходу на новую схему через бота. В текущей работе ничего не меняется, пока не будет
+        отдельной команды. Задача сейчас: занести все рабочие аккаунты в бота.</div>
+    </div>
 
     <div class="tldr">
-      <h2>Коротко</h2>
+      <h2>Что нужно сделать</h2>
       <ol>
-        <li>Ребята включают галочки безопасности и дают тебе <b>API Key + Secret с полным доступом</b> (видео ниже).</li>
-        <li>Ты добавляешь каждый аккаунт в <a class="bot" href="https://t.me/mexcinsertbot" target="_blank" rel="noopener">@mexcinsertbot</a> по схеме.</li>
-        <li>Бот отдаёт адрес для вайтлиста → клиент вносит его → <b>аккаунт готов</b>.</li>
+        <li>Получить по каждому аккаунту <b>API Key + Secret с полным доступом</b> (Шаг 1).</li>
+        <li>Добавить аккаунт в <a class="bot" href="https://t.me/mexcinsertbot" target="_blank" rel="noopener">@mexcinsertbot</a> по схеме (Шаг 2).</li>
+        <li>Бот выдаёт адрес для вайтлиста, клиент вносит его — аккаунт добавлен.</li>
       </ol>
     </div>
   </header>
@@ -167,30 +183,30 @@
       <div class="num">1</div>
       <div>
         <h2>Получить API с полным доступом</h2>
-        <p class="step-sub">Что твои ребята делают на своём аккаунте MEXC</p>
+        <p class="step-sub">Действия клиента на его аккаунте MEXC</p>
       </div>
     </div>
 
     <div class="card">
-      <p>Автовывод профита работает <b>только по API-ключу</b>. Поэтому по каждому аккаунту нужно
-        получить <b>API Key</b> и <b>Secret Key</b> с включёнными правами. На видео показано, какие
-        галочки безопасности включить и как выпустить ключ с полным доступом:</p>
+      <p>Автовывод работает только по API-ключу. По каждому аккаунту нужны <b>API Key</b> и
+        <b>Secret Key</b> с правами на чтение, торговлю и вывод. На видео — какие галочки безопасности
+        включить и как выпустить такой ключ:</p>
 
       <div class="video-frame" style="margin-top:16px">
         <video controls preload="metadata" playsinline>
           <source src="api-access.mp4" type="video/mp4">
-          Твой браузер не умеет проигрывать видео.
+          Браузер не проигрывает видео — используйте ссылку «Скачать».
         </video>
         <div class="video-cap">
           <span>Настройки безопасности и выпуск API-ключа</span>
-          <a class="dl" href="api-access.mp4" download>Скачать видео ↓</a>
+          <a class="dl" href="api-access.mp4" download>Скачать видео</a>
         </div>
       </div>
 
       <div class="callout">
-        <span class="ic">🔑</span>
-        <div>Нужны <b>оба ключа</b> — Access Key <i>и</i> Secret Key — с правами на чтение, торговлю
-          и <b>вывод</b>. Secret показывается один раз при создании: пусть сразу скопируют и пришлют тебе.</div>
+        <span class="ic">→</span>
+        <div>Нужны оба ключа — Access Key и Secret Key. Secret показывается один раз при создании,
+          его нужно скопировать сразу.</div>
       </div>
     </div>
   </section>
@@ -201,7 +217,7 @@
       <div class="num">2</div>
       <div>
         <h2>Добавить аккаунт по схеме</h2>
-        <p class="step-sub">Кто что делает — клиент и ты (посредник)</p>
+        <p class="step-sub">Кто что делает: клиент и посредник</p>
       </div>
     </div>
 
@@ -298,7 +314,7 @@
     </div>
 
     <div class="card">
-      <p>По схеме от клиента тебе нужно получить и загрузить в бота:</p>
+      <p>От клиента нужно получить и загрузить в бота три поля:</p>
       <div class="data-grid">
         <div class="data-row">
           <div class="k">Веб-токен</div>
@@ -313,9 +329,9 @@
           <div class="v">секрет API-ключа MEXC</div>
         </div>
       </div>
-      <p style="margin-bottom:0">Бот сам создаёт кошелёк и выдаёт <b>адрес для вывода</b>. Ты отправляешь этот адрес
-        клиенту — он вносит его в <b>вайтлист вывода</b> на MEXC (сеть BSC / BEP-20). После этого в боте
-        жмёшь «🔎 Проверить» — если адрес в вайтлисте, аккаунт готов.</p>
+      <p style="margin-bottom:0">Бот создаёт кошелёк и выдаёт <b>адрес для вывода</b>. Этот адрес нужно передать
+        клиенту, клиент вносит его в <b>вайтлист вывода</b> на MEXC (сеть BSC / BEP-20). После этого в боте
+        нажать «Проверить» — если адрес в вайтлисте, аккаунт добавлен.</p>
     </div>
   </section>
 
@@ -324,29 +340,30 @@
     <div class="step-head">
       <div class="num">3</div>
       <div>
-        <h2>Если API дать не готовы</h2>
+        <h2>Если клиент не даёт API</h2>
         <p class="step-sub">Запасной вариант — только веб-токен</p>
       </div>
     </div>
     <div class="card">
-      <p>Бывает, клиент упирается и не хочет выдавать API. Тогда в боте при добавлении выбери
-        <b>«🚫 Без API»</b> и занеси хотя бы <b>веб-токен</b> — аккаунт всё равно попадёт в базу.</p>
+      <p>Если клиент не выдаёт API, в боте при добавлении выбрать <b>«Без API»</b> и занести
+        только <b>веб-токен</b> — аккаунт попадёт в базу.</p>
       <div class="callout warn">
-        <span class="ic">⚠️</span>
-        <div>Но это <b>не наш вариант</b>: без API <b>не работает автовывод</b> — профит придётся выводить
-          руками и «вьёбывать» деньги вручную. API избавляет от этой боли, поэтому по возможности
-          <b>всегда добивайся полного доступа</b>.</div>
+        <span class="ic">!</span>
+        <div>Без API <b>автовывод не работает</b>: профит придётся выводить вручную. Предпочтительный
+          вариант — полный доступ по API.</div>
       </div>
     </div>
   </section>
 
   <div class="final">
-    <h2>Дальше — всё через бота</h2>
-    <p>Как только аккаунты в <a class="bot" href="https://t.me/mexcinsertbot" target="_blank" rel="noopener">@mexcinsertbot</a>,
-      профиль, список аккаунтов, обновление токенов и автовывод — в одном месте. Удобно и без лишней возни.</p>
+    <h2>Что дальше</h2>
+    <p>Пока работаем по старой схеме. Когда все аккаунты будут в
+      <a class="bot" href="https://t.me/mexcinsertbot" target="_blank" rel="noopener">@mexcinsertbot</a>,
+      перейдём на новую схему: профиль, список аккаунтов, обновление токенов и автовывод — через бота.
+      О переходе будет отдельная команда.</p>
   </div>
 
-  <footer>Вопросы — в личку. Погнали 🚀</footer>
+  <footer>Вопросы по добавлению — в личку.</footer>
 
 </div>
 </body>
