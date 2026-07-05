@@ -133,6 +133,21 @@
   .data-row .v{color:var(--ink-soft)}
   .data-row .v code{color:var(--ink)}
 
+  /* ── текст для клиента ── */
+  .res-title{font-size:23px; font-weight:800; letter-spacing:-.01em; margin:0}
+  .client-msg{
+    white-space:pre-wrap; word-break:break-word;
+    font-family:'Manrope', system-ui, sans-serif; font-size:15.5px; line-height:1.62; color:var(--ink);
+    background:#f7fafc; border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin:0;
+  }
+  .copy-btn{
+    margin-top:14px; appearance:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:15px;
+    color:#fff; background:var(--accent); border:0; border-radius:10px; padding:11px 22px;
+    transition:background .15s;
+  }
+  .copy-btn:hover{background:var(--accent-ink)}
+  .copy-btn.done{background:var(--go)}
+
   .final{
     margin-top:52px; text-align:center; padding:34px 24px;
     background:linear-gradient(165deg, #0c1826, #123049); color:#eaf6fb;
@@ -198,7 +213,7 @@
           Браузер не проигрывает видео — используйте ссылку «Скачать».
         </video>
         <div class="video-cap">
-          <span>Настройки безопасности и выпуск API-ключа</span>
+          <span>До 0:41 — настройка безопасности и выпуск API-ключа. После 0:41 — добавление адреса вывода в вайтлист.</span>
           <a class="dl" href="api-access.mp4" download>Скачать видео</a>
         </div>
       </div>
@@ -335,6 +350,27 @@
     </div>
   </section>
 
+  <!-- ТЕКСТ ДЛЯ КЛИЕНТА -->
+  <section>
+    <h2 class="res-title">Готовый текст для клиента</h2>
+    <p class="step-sub" style="margin:-2px 0 14px">Скопировать и отправить клиенту. Ссылку на адрес вывода дать после того, как заведёшь аккаунт в боте.</p>
+    <div class="card">
+<pre id="clientMsg" class="client-msg">Привет. Переносим аккаунт, нужно два действия.
+
+1. Настройка и API-ключ.
+Видео: https://artemdost.github.io/flip-migration/api-access.mp4
+До 0:41 — включи настройки безопасности и выпусти API-ключ с полным доступом (чтение, торговля, вывод).
+Пришли мне: веб-токен (WEBID), Access Key, Secret Key. Secret показывается один раз при создании — скопируй сразу.
+
+2. Адрес для вывода.
+После 0:41 на видео — как добавить адрес в вайтлист вывода.
+Сам адрес пришлю после того, как заведу аккаунт. Добавь его в вайтлист, сеть BSC (BEP-20).
+
+После этого аккаунт готов.</pre>
+      <button class="copy-btn" type="button" id="copyBtn">Копировать</button>
+    </div>
+  </section>
+
   <!-- ШАГ 3 -->
   <section>
     <div class="step-head">
@@ -366,5 +402,28 @@
   <footer>Вопросы по добавлению — в личку.</footer>
 
 </div>
+<script>
+  (function(){
+    var btn = document.getElementById('copyBtn');
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+      var txt = document.getElementById('clientMsg').textContent;
+      var done = function(){
+        btn.classList.add('done'); var o = btn.textContent; btn.textContent = 'Скопировано';
+        setTimeout(function(){ btn.classList.remove('done'); btn.textContent = o; }, 1800);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done, function(){ fallback(txt, done); });
+      } else { fallback(txt, done); }
+    });
+    function fallback(txt, cb){
+      var ta = document.createElement('textarea');
+      ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try{ document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta); cb();
+    }
+  })();
+</script>
 </body>
 </html>
