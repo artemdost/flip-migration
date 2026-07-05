@@ -133,6 +133,17 @@
   .data-row .v{color:var(--ink-soft)}
   .data-row .v code{color:var(--ink)}
 
+  /* ── варианты подключения ── */
+  .options{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px}
+  .opt{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 20px}
+  .opt.rec{border:1.5px solid var(--go); box-shadow:0 8px 30px rgba(21,147,90,.12)}
+  .opt h3{margin:0 0 6px; font-size:18px; font-weight:800}
+  .opt p{margin:0; color:var(--ink-soft); font-size:15px; line-height:1.5}
+  .opt .tag{display:inline-block; font-size:11.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:999px; margin-bottom:9px}
+  .opt.rec .tag{background:var(--go-wash); color:#0f5a39}
+  .opt.alt .tag{background:#eef2f5; color:#5b7286}
+  @media (max-width:560px){ .options{grid-template-columns:1fr} }
+
   /* ── текст для клиента ── */
   .res-title{font-size:23px; font-weight:800; letter-spacing:-.01em; margin:0}
   .client-msg{
@@ -191,6 +202,25 @@
       </ol>
     </div>
   </header>
+
+  <!-- ВАРИАНТЫ ПОДКЛЮЧЕНИЯ -->
+  <section aria-label="Варианты подключения">
+    <h2 class="res-title">Два варианта подключения</h2>
+    <p class="step-sub" style="margin:-2px 0 4px">Предпочтительный — API + веб</p>
+    <div class="options">
+      <div class="opt rec">
+        <span class="tag">Рекомендуется</span>
+        <h3>API + веб</h3>
+        <p>Клиент даёт веб-токен и API-ключ (Access + Secret) с полным доступом.
+          Работает автовывод профита.</p>
+      </div>
+      <div class="opt alt">
+        <span class="tag">Запасной</span>
+        <h3>Только веб</h3>
+        <p>Клиент даёт только веб-токен. Автовывод не работает — профит выводится вручную.</p>
+      </div>
+    </div>
+  </section>
 
   <!-- ШАГ 1 -->
   <section>
